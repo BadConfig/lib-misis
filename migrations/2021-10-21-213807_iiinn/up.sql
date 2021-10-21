@@ -32,3 +32,19 @@ create table promo_codes (
     name varchar not null,
     quantity bigint not null
 );
+
+create or replace view wide_orders as
+    select
+        b.name as book_name,
+        bo.id,
+        bo.book_id,
+        bo.users_id,
+        bo."from",
+        bo."to",
+        bo.total_price,
+        bo.is_payed,
+        bo.creation_datetime
+    from
+        book_orders bo left join books b on b.unique_id = bo.book_id;
+
+insert into promo_codes (name, quantity) values ('1percent',1::bigint),('90percent',90::bigint);
