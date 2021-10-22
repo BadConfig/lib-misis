@@ -58,6 +58,7 @@ pub struct UsersNew {
     pub surname: String,
     pub patronymic: String,
     pub phone: String,
+    pub unique_id: String,
 }
 
 #[derive(Serialize,Deserialize,Clone,AsChangeset)]
