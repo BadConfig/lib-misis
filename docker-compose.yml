@@ -1,7 +1,7 @@
 version: '3'
 services:
   server:
-    image: badconfig/misis-lib
+    image: badconfig/lib-misis
     container_name: server
     tty: true
     environment:
@@ -26,22 +26,6 @@ services:
       - app-network
     volumes:
       - pg_misis-lib:/var/lib/postgresql/data
-  nginx:
-    image: nginx:1.15-alpine
-    container_name: nginx
-    volumes:
-      - ./data/nginx:/etc/nginx/conf.d
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
-      - ./html:/var/tools
-      - ./static:/var/tools/static
-      - ./summary:/var/tools/summary
-    ports:
-      - "80:80"
-      - "443:443"
-    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
-    networks:
-      - app-network
 volumes:
   pg_misis-lib:
 networks:

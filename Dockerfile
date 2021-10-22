@@ -1,7 +1,7 @@
 FROM rustlang/rust:nightly AS builder
 
-RUN USER=root cargo new --bin topgo
-WORKDIR /topgo
+RUN USER=root cargo new --bin lib-misis
+WORKDIR /lib-misis
 RUN apt update -y && apt install -y clang
 
 # copy over your manifests
@@ -16,7 +16,6 @@ RUN rm src/*.rs
 COPY ./src ./src
 
 # build for release
-RUN rm ./target/release/deps/topgo*
 RUN cargo build --release
 
 FROM debian:buster-slim
@@ -30,9 +29,9 @@ RUN apt-get update && \
         --no-install-recommends
 RUN apt-get update && apt-get -y install ca-certificates libssl-dev && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /topgo/target/release/topgo /topgo/topgo
-WORKDIR /topgo/
+COPY --from=builder /lib-misis/target/release/lib-misis /lib-misis/lib-misis
+WORKDIR /lib-misis/
 EXPOSE 8088
 
 
-CMD ["/topgo/topgo"]
+CMD ["/lib-misis/lib-misis"]

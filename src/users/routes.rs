@@ -18,6 +18,7 @@ use super::db::{
     BooksNew,
     OrderNew,
     Id,
+    SId,
 };
 
 pub fn users_routes(cfg: &mut web::ServiceConfig) {
@@ -58,11 +59,11 @@ pub async fn add_order(
 }
 
 pub async fn user_by_id(
-    form: web::Json<Id>,
+    form: web::Json<SId>,
     conn: web::Data<DbPool>,
 ) -> Result<HttpResponse> {
     let conn = conn.get()?;
-    let r = Users::from_id(form.id, &conn).await?;
+    let r = Users::get_books(form.id.clone(), &conn).await?;
     Ok(HttpResponse::Ok().json(r))
 }
 

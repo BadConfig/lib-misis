@@ -16,6 +16,11 @@ use crate::schema::{
 };
 
 #[derive(Serialize,Deserialize,Clone,Queryable)]
+pub struct SId {
+    pub id: String,
+}
+
+#[derive(Serialize,Deserialize,Clone,Queryable)]
 pub struct Id {
     pub id: i64,
 }
@@ -115,6 +120,13 @@ pub struct BookOrders {
     pub creation_datetime: chrono::NaiveDateTime,
 }
 
+
+#[derive(Serialize,Deserialize,Clone)]
+pub struct BookOp {
+    pub orders: Vec<BookOrders>,
+    pub user: Users,
+}
+
 impl Books {
     pub async fn new(
         creds: &BooksNew, 
@@ -138,9 +150,21 @@ impl Users {
 
     pub async fn get(
         conn: &PgConnection,
-    ) -> Result<Vec<Users>> {
-        let r = users::table
-            .get_results(conn)?;
+    ) -> Result<Vec<BookOp>> {
+        let mut r = Vec::<BookOp>::new();
+        let u = users::table
+            .get_results::<Users>(conn)?;
+        for i in u {
+            let bks  = diesel::sql_query("select * from wide_orders where users_id=$1")
+                    .bind::<Varchar,_>(i.unique_id.clone())
+                .get_results::<BookOrders>(conn)?;
+            r.push(
+                BookOp {
+                    orders: bks,
+                    user: i,
+                }
+            );
+        } 
         Ok(r)
     }
 
